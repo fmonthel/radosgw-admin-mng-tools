@@ -6,7 +6,14 @@ import json
 import random
 import rgwadmin
 import logging
- 
+
+# Parameters
+access_key = '****'
+secret_key ='****'
+rgw_server = 'srvusceph05.flox-arts.net'
+env = 'tmp'
+ssl = False
+
 # Options
 parser = argparse.ArgumentParser(description='Create object account on CEPH cluster for OpenStack Swift and Amazon S3')
 parser.add_argument('trigram', help='Trigram of account owner (example : fla)', action='store')
@@ -42,13 +49,6 @@ else:
 # Other mandatory inputs
 trigram = args.trigram.lower()
 ownername = args.ownername.lower()
- 
-# Parameters
-access_key = '****'
-secret_key ='****'
-rgw_server = 'srvusceph05.flox-arts.net'
-env = 'tmp'
-ssl = False
  
 # Object connection ADMIN
 radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl)

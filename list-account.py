@@ -4,6 +4,12 @@ import json
 import rgwadmin
 import argparse
 
+# Parameters
+access_key = '****'
+secret_key = '****'
+rgw_server = 'srvusceph05.flox-arts.net'
+ssl = False
+
 # Options
 parser = argparse.ArgumentParser(description='List usage of account on CEPH cluster')
 parser.add_argument('--accountname', help='Accountname to report (example : flatstobj01)', action='store', dest='accountname')
@@ -13,14 +19,9 @@ if(args.accountname):
 	accountname = args.accountname.lower()
 else:
 	accountname = ""
-
-# Parameters
-access_key = '****'
-secret_key = '****'
-rgw_server = 'srvusceph05.flox-arts.net'
  
 # Object connection
-radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=False)
+radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl)
  
 # Get users and print
 users = radosgw.get_users()
