@@ -41,10 +41,10 @@ for user in users:
 		gb_received = 0
 		gb_sent = 0
 		nb_ops = 0
-	# Global usage
-    kb_total = 1
-    obj_total = 1
-	# Print summary
+    # Global usage
+    kb_total = 0
+    obj_total = 0
+    # Print summary
 	print "Stats - Nb ops : %d - Downloaded data : %.2f GB - Uploaded data : %.2f GB" % (nb_ops, gb_sent, gb_received)
 	# Get buckets of user
 	buckets = radosgw.get_bucket(uid=user)
