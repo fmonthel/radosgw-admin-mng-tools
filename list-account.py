@@ -37,7 +37,7 @@ for user in users:
 		gb_received = float(sUser["summary"][0]["total"]["bytes_received"])/1073741824
 		gb_sent = float(sUser["summary"][0]["total"]["bytes_sent"])/1073741824
 		nb_ops = sUser["summary"][0]["total"]["successful_ops"]
-	else :
+	else:
 		gb_received = 0
 		gb_sent = 0
 		nb_ops = 0
@@ -59,7 +59,7 @@ for user in users:
                 # Global value
                 kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
                 obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
-			else :
+			else:
 				nb_object = 0
 				size_gb = 0
 			# Print values
@@ -72,16 +72,16 @@ for user in users:
                 # Global value
                 kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
                 obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
-			else :
+			else:
 				nb_object = 0
 				size_gb = 0
 			if(dBucket["bucket_quota"]["max_objects"] <= 0):
 				quota_object = 0
-			else :
+			else:
 				quota_object = dBucket["bucket_quota"]["max_objects"]
 			if(dBucket["bucket_quota"]["max_size_kb"] <= 0):
 				quota_gb = 0
-			else :
+			else:
 				quota_gb = float(dBucket["bucket_quota"]["max_size_kb"])/1048576
 			# Print values
 			print "- Bucket : %s (quota enabled) - Nb object(s) : %d (quota : %d) - GB data : %.2f (quota : %.2f GB)" % (bucket, nb_object, quota_object, size_gb, quota_gb)
