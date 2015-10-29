@@ -1,5 +1,5 @@
 #!/usr/bin/env python
- 
+
 import json
 import rgwadmin
 import argparse
@@ -19,18 +19,21 @@ if(args.accountname):
 	accountname = args.accountname.lower()
 else:
 	accountname = ""
- 
+
 # Object connection
 radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl)
- 
+
 # Get users and print
 users = radosgw.get_users()
 for user in users:
 	if(accountname  and accountname != user) :
-		continue;
+		continue
 	# Get user info
 	dUser = radosgw.get_user(user)
 	print "#### Account : " + user + " - Name : " +  dUser["display_name"] + " ####"
+	# Global usage
+	kb_total = 0
+	obj_total = 0
 	# Get user stats
 	sUser = radosgw.get_usage(user, show_summary=True)
 	if(sUser["summary"]):
@@ -41,9 +44,6 @@ for user in users:
 		gb_received = 0
 		gb_sent = 0
 		nb_ops = 0
-    # Global usage
-    kb_total = 0
-    obj_total = 0
     # Print summary
 	print "Stats - Nb ops : %d - Downloaded data : %.2f GB - Uploaded data : %.2f GB" % (nb_ops, gb_sent, gb_received)
 	# Get buckets of user
@@ -56,9 +56,9 @@ for user in users:
 			if('rgw.main' in dBucket["usage"].keys()):
 				nb_object = dBucket["usage"]["rgw.main"]["num_objects"]
 				size_gb = float(dBucket["usage"]["rgw.main"]["size_kb"])/1048576
-                # Global value
-                kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
-                obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
+				# Global value
+				kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
+				obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
 			else:
 				nb_object = 0
 				size_gb = 0
@@ -69,9 +69,9 @@ for user in users:
 			if('rgw.main' in dBucket["usage"].keys()):
 				nb_object = dBucket["usage"]["rgw.main"]["num_objects"]
 				size_gb = float(dBucket["usage"]["rgw.main"]["size_kb"])/1048576
-                # Global value
-                kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
-                obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
+				# Global value
+				kb_total = kb_total + dBucket["usage"]["rgw.main"]["size_kb"]
+				obj_total = obj_total + dBucket["usage"]["rgw.main"]["num_objects"]
 			else:
 				nb_object = 0
 				size_gb = 0
