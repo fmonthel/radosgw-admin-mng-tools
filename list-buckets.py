@@ -6,7 +6,7 @@ from terminaltables import AsciiTable
 
 # Parameters
 access_key = 'costmpobj01'
-secret_key = 'xxxxxxx'
+secret_key = 'xxxxx'
 rgw_server = 'objtmp01.flox-arts.net'
 ssl = False
 
@@ -43,18 +43,19 @@ dBucketsUsage = {}
 dUsage = radosgw.get_usage(show_entries=True,show_summary=True)
 for dOwner in dUsage["entries"]:
 	for dBucket in dOwner["buckets"]:
-		dBucketsUsage[dBucket["bucket"]] = {'ops':0, 'received_kb':0, 'sent_kb':0}
+		dBucketsUsage[dBucket["bucket"]] = {'ok_ops':0, 'ko_ops':0, 'received_kb':0, 'sent_kb':0}
 		for item in dBucket["categories"]:
 			# Build bucket dic
-			dBucketsUsage[dBucket["bucket"]]['ops'] = dBucketsUsage[dBucket["bucket"]]['ops'] + item["successful_ops"]
+			dBucketsUsage[dBucket["bucket"]]['ok_ops'] = dBucketsUsage[dBucket["bucket"]]['ok_ops'] + item["successful_ops"]
+			dBucketsUsage[dBucket["bucket"]]['ko_ops'] = dBucketsUsage[dBucket["bucket"]]['ko_ops'] + (item["ops"] - item["successful_ops"])
 			dBucketsUsage[dBucket["bucket"]]['received_kb'] = dBucketsUsage[dBucket["bucket"]]['received_kb'] + float(item["bytes_received"]/1024)
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OPs nb', 'GB uploaded', 'GB downloaded']]
+myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OPs OK','OPs KO', 'GB uploaded', 'GB downloaded']]
 
 # Global usage
-kb_total = obj_total = kb_quota_total = obj_quota_total = ops_total = kb_received_total = kb_sent_total = 0
+kb_total = obj_total = kb_quota_total = obj_quota_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
 
 # Loop on bucket
 for dBucket in dBuckets:
@@ -91,15 +92,17 @@ for dBucket in dBuckets:
 		quota_object = quota_gb = 0
 	# Get stats usage
 	if(bucket in dBucketsUsage.keys()):
-		ops = dBucketsUsage[bucket]['ops']
+		ops_ok = dBucketsUsage[bucket]['ok_ops']
+		ops_ko = dBucketsUsage[bucket]['ko_ops']
 		received_gb = float(dBucketsUsage[bucket]['received_kb'])/1048576
 		sent_gb = float(dBucketsUsage[bucket]['sent_kb'])/1048576
 		# Global value
-		ops_total = ops_total + dBucketsUsage[bucket]['ops']
+		ops_ok_total = ops_ok_total + dBucketsUsage[bucket]['ok_ops']
+		ops_ko_total = ops_ko_total + dBucketsUsage[bucket]['ko_ops']
 		kb_received_total = kb_received_total + dBucketsUsage[bucket]['received_kb']
 		kb_sent_total = kb_sent_total + dBucketsUsage[bucket]['sent_kb']
 	else:
-		ops = received_gb = sent_gb = 0
+		ops_ok = ops_ko = received_gb = sent_gb = 0
 	# Print values and build list
 	tmpdata = list()
 	tmpdata.append(bucket) # Bucketname
@@ -110,7 +113,8 @@ for dBucket in dBuckets:
 	tmpdata.append(str(quota_object)) # Quota on objects
 	tmpdata.append(str(round(size_gb,1))) # GB size
 	tmpdata.append(str(round(quota_gb,1))) # Quota on size
-	tmpdata.append(str(ops)) # OPs number
+	tmpdata.append(str(ops_ok)) # OPs OK number
+	tmpdata.append(str(ops_ko)) # OPs KO number
 	tmpdata.append(str(round(received_gb,1))) # GB received
 	tmpdata.append(str(round(sent_gb,1))) # GB sent
 	myAsciiTable.append(tmpdata)
@@ -125,7 +129,8 @@ tmpdata.append(str(obj_total))
 tmpdata.append(str(obj_quota_total))
 tmpdata.append(str(round(float(kb_total)/1048576,1)))
 tmpdata.append(str(round(float(kb_quota_total)/1048576,1)))
-tmpdata.append(str(ops_total))
+tmpdata.append(str(ops_ok_total))
+tmpdata.append(str(ops_ko_total))
 tmpdata.append(str(round(float(kb_received_total)/1048576,1)))
 tmpdata.append(str(round(float(kb_sent_total)/1048576,1)))
 myAsciiTable.append(tmpdata)
@@ -133,6 +138,6 @@ myAsciiTable.append(tmpdata)
 myTable = AsciiTable(myAsciiTable)
 myTable.inner_footing_row_border = True
 myTable.justify_columns[4] = myTable.justify_columns[5] = myTable.justify_columns[6] = myTable.justify_columns[7] = 'right'
-myTable.justify_columns[8] = myTable.justify_columns[9] = myTable.justify_columns[10] = 'right'
+myTable.justify_columns[8] = myTable.justify_columns[9] = myTable.justify_columns[10] = myTable.justify_columns[11] = 'right'
 # Output data
 print myTable.table
