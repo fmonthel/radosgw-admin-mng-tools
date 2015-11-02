@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-import json
 import rgwadmin
 import argparse
 from terminaltables import AsciiTable
 
 # Parameters
 access_key = 'costmpobj01'
-secret_key = 'zzzzzzz'
+secret_key = 'xxxxxxx'
 rgw_server = 'objtmp01.flox-arts.net'
 ssl = False
 
@@ -29,7 +28,7 @@ else:
 	accountname = ""
 
 # Object connection
-radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl)
+radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl,verify=False)
 
 # Get buckets impacted
 if(bucketname):
