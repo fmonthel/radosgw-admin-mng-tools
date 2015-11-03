@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+#
+# list-buckets.py
+#
+# Simple wrapper around the Ceph buckets dumps
+#
+# Author: Florent MONTHEL (fmonthel@flox-arts.net)
+#
 
 import rgwadmin
 import argparse
@@ -6,7 +13,7 @@ from terminaltables import AsciiTable
 
 # Parameters
 access_key = 'costmpobj01'
-secret_key = 'xxxxx'
+secret_key = 'xxxxxxx'
 rgw_server = 'objtmp01.flox-arts.net'
 ssl = False
 
@@ -52,7 +59,7 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OP(s) OK','OP(s) KO', 'GB uploaded', 'GB downloaded']]
+myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OP(s) OK','OP(s) KO', 'GB upl', 'GB dl']]
 
 # Global usage
 kb_total = obj_total = kb_quota_total = obj_quota_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
@@ -121,7 +128,7 @@ for dBucket in dBuckets:
 
 # Get total values and print AsciiTable
 tmpdata = list()
-tmpdata.append("Total")
+tmpdata.append("Total : " + str(len(myAsciiTable) - 1) + " bucket(s)")
 tmpdata.append("")
 tmpdata.append("")
 tmpdata.append("")

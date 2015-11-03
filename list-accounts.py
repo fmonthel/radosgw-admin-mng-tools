@@ -1,4 +1,11 @@
 #!/usr/bin/env python
+#
+# list-accounts.py
+#
+# Simple wrapper around the Ceph buckets dumps
+#
+# Author: Florent MONTHEL (fmonthel@flox-arts.net)
+#
 
 import rgwadmin
 import argparse
@@ -32,18 +39,19 @@ dBucketsUsage = {}
 dUsage = radosgw.get_usage(show_entries=True,show_summary=True)
 for dOwner in dUsage["entries"]:
 	for dBucket in dOwner["buckets"]:
-		dBucketsUsage[dBucket["bucket"]] = {'ops':0, 'received_kb':0, 'sent_kb':0}
+		dBucketsUsage[dBucket["bucket"]] = {'ok_ops':0, 'ko_ops':0, 'received_kb':0, 'sent_kb':0}
 		for item in dBucket["categories"]:
 			# Build bucket dic
-			dBucketsUsage[dBucket["bucket"]]['ops'] = dBucketsUsage[dBucket["bucket"]]['ops'] + item["successful_ops"]
+			dBucketsUsage[dBucket["bucket"]]['ok_ops'] = dBucketsUsage[dBucket["bucket"]]['ok_ops'] + item["successful_ops"]
+			dBucketsUsage[dBucket["bucket"]]['ko_ops'] = dBucketsUsage[dBucket["bucket"]]['ko_ops'] + (item["ops"] - item["successful_ops"])
 			dBucketsUsage[dBucket["bucket"]]['received_kb'] = dBucketsUsage[dBucket["bucket"]]['received_kb'] + float(item["bytes_received"]/1024)
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
-#print dUsage
+
 # Ascii table
-myAsciiTable = [['Account name','Display name','Bucket(s) nb','Max bucket(s) quota','Obj nb','GB size','OPs nb', 'GB uploaded', 'GB downloaded']]
+myAsciiTable = [['Account name','Display name','Suspended','Bucket(s) nb','Max bucket(s)','Obj nb','GB size','OP(s) OK','OP(s) KO', 'GB upl', 'GB dl']]
 
 # Global usage
-kb_total = obj_total = bucket_total = max_buckets_total = ops_total = kb_received_total = kb_sent_total = 0
+kb_total = obj_total = bucket_total = max_buckets_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
 
 # Loop on users
 for user in dUsers:
@@ -56,20 +64,26 @@ for user in dUsers:
 	account = user
 	displayname = dUser["display_name"]
 	max_buckets = dUser["max_buckets"]
+	if(dUser["suspended"]):
+		suspended = "yes"
+	else:
+		suspended = "no"
 	# Global value
 	max_buckets_total = max_buckets_total + dUser["max_buckets"]
 	# Get stats usage
 	sUser = radosgw.get_usage(user, show_summary=True)
 	if(sUser["summary"]):
-		ops = sUser["summary"][0]["total"]["successful_ops"]
+		ops_ok = sUser["summary"][0]["total"]["successful_ops"]
+		ops_ko = sUser["summary"][0]["total"]["ops"] - sUser["summary"][0]["total"]["successful_ops"]
 		received_gb = float(sUser["summary"][0]["total"]["bytes_received"])/1073741824
 		sent_gb = float(sUser["summary"][0]["total"]["bytes_sent"])/1073741824
 		# Global value
-		ops_total = ops_total + sUser["summary"][0]["total"]["successful_ops"]
+		ops_ok_total = ops_ok_total + ops_ok
+		ops_ko_total = ops_ko_total + ops_ko
 		kb_received_total = kb_received_total + float(sUser["summary"][0]["total"]["bytes_received"])/1024
 		kb_sent_total = kb_sent_total + float(sUser["summary"][0]["total"]["bytes_sent"])/1024
 	else:
-		ops = received_gb = sent_gb = 0
+		ops_ok = ops_ko = received_gb = sent_gb = 0
 	# Get buckets stats of user
 	dBuckets = radosgw.get_bucket(uid=user, stats=True)
 	nb_bucket = len(dBuckets)
@@ -93,31 +107,35 @@ for user in dUsers:
 	tmpdata = list()
 	tmpdata.append(account) # Accountname
 	tmpdata.append(displayname) # Displayname
+	tmpdata.append(suspended) # Suspended
 	tmpdata.append(str(nb_bucket)) # Bucket(s) nb
 	tmpdata.append(str(max_buckets)) # Max buckets
 	tmpdata.append(str(nb_object)) # Number of objets
 	tmpdata.append(str(round(size_gb,1))) # GB size
-	tmpdata.append(str(ops)) # OPs number
+	tmpdata.append(str(ops_ok)) # OPs OK number
+	tmpdata.append(str(ops_ko)) # OPs KO number
 	tmpdata.append(str(round(received_gb,1))) # GB received
 	tmpdata.append(str(round(sent_gb,1))) # GB sent
 	myAsciiTable.append(tmpdata)
 
 # Get total values and print AsciiTable
 tmpdata = list()
-tmpdata.append("Total")
+tmpdata.append("Total : " + str(len(myAsciiTable) - 1) + " account(s)")
+tmpdata.append("")
 tmpdata.append("")
 tmpdata.append(str(bucket_total))
 tmpdata.append(str(max_buckets_total))
 tmpdata.append(str(obj_total))
 tmpdata.append(str(round(float(kb_total)/1048576,1)))
-tmpdata.append(str(ops_total))
+tmpdata.append(str(ops_ok_total))
+tmpdata.append(str(ops_ko_total))
 tmpdata.append(str(round(float(kb_received_total)/1048576,1)))
 tmpdata.append(str(round(float(kb_sent_total)/1048576,1)))
 myAsciiTable.append(tmpdata)	
 # Create AsciiTable
 myTable = AsciiTable(myAsciiTable)
 myTable.inner_footing_row_border = True
-myTable.justify_columns[2] = myTable.justify_columns[3] = myTable.justify_columns[3] = myTable.justify_columns[3] = 'right'
-myTable.justify_columns[6] = myTable.justify_columns[7] = myTable.justify_columns[8] = 'right'
+myTable.justify_columns[3] = myTable.justify_columns[4] = myTable.justify_columns[5] = myTable.justify_columns[6] = 'right'
+myTable.justify_columns[7] = myTable.justify_columns[8] = myTable.justify_columns[9] = myTable.justify_columns[10] = 'right'
 # Output data
 print myTable.table
