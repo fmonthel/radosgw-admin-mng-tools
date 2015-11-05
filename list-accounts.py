@@ -9,11 +9,14 @@
 
 import rgwadmin
 import argparse
+import time
+from datetime import datetime
+from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
 access_key = 'costmpobj01'
-secret_key = 'xxxxxxx'
+secret_key = 'xxxxx'
 rgw_server = 'objtmp01.flox-arts.net'
 ssl = False
 
@@ -36,10 +39,16 @@ dUsers = radosgw.get_users()
 
 # Get global usage to build bucket OPs
 dBucketsUsage = {}
+oldestUsage = time.time() # Current timestamp
+newestUsage = 0 # Old timestamp :)
 dUsage = radosgw.get_usage(show_entries=True,show_summary=True)
 for dOwner in dUsage["entries"]:
 	for dBucket in dOwner["buckets"]:
 		dBucketsUsage[dBucket["bucket"]] = {'ok_ops':0, 'ko_ops':0, 'received_kb':0, 'sent_kb':0}
+		if(dBucket["epoch"] < oldestUsage):
+			oldestUsage = dBucket["epoch"]
+		if(dBucket["epoch"] > newestUsage):
+			newestUsage = dBucket["epoch"]
 		for item in dBucket["categories"]:
 			# Build bucket dic
 			dBucketsUsage[dBucket["bucket"]]['ok_ops'] = dBucketsUsage[dBucket["bucket"]]['ok_ops'] + item["successful_ops"]
@@ -48,7 +57,7 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Account name','Display name','Suspended','Bucket(s) nb','Max bucket(s)','Obj nb','GB size','OP(s) OK','OP(s) KO', 'GB upl', 'GB dl']]
+myAsciiTable = [['Account name','Display name','Suspended','Bucket(s) nb','Max bucket(s)','Obj nb','GB size','OP(s) OK (*)','OP(s) KO (*)', 'GB upl (*)', 'GB dl (*)']]
 
 # Global usage
 kb_total = obj_total = bucket_total = max_buckets_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
@@ -139,3 +148,4 @@ myTable.justify_columns[3] = myTable.justify_columns[4] = myTable.justify_column
 myTable.justify_columns[7] = myTable.justify_columns[8] = myTable.justify_columns[9] = myTable.justify_columns[10] = 'right'
 # Output data
 print myTable.table
+print "* Stats from " + str(datetime.utcfromtimestamp(oldestUsage)) + " to " + str(datetime.utcfromtimestamp(newestUsage))

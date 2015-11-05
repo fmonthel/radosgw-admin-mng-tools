@@ -9,11 +9,14 @@
 
 import rgwadmin
 import argparse
+import time
+from datetime import datetime
+from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
 access_key = 'costmpobj01'
-secret_key = 'xxxxxxx'
+secret_key = 'xxxxx'
 rgw_server = 'objtmp01.flox-arts.net'
 ssl = False
 
@@ -47,10 +50,16 @@ else:
 
 # Get global usage to build bucket OPs
 dBucketsUsage = {}
-dUsage = radosgw.get_usage(show_entries=True,show_summary=True)
+oldestUsage = time.time() # Current timestamp
+newestUsage = 0 # Old timestamp :)
+dUsage = radosgw.get_usage(show_entries=True, show_summary=True)
 for dOwner in dUsage["entries"]:
 	for dBucket in dOwner["buckets"]:
 		dBucketsUsage[dBucket["bucket"]] = {'ok_ops':0, 'ko_ops':0, 'received_kb':0, 'sent_kb':0}
+		if(dBucket["epoch"] < oldestUsage):
+			oldestUsage = dBucket["epoch"]
+		if(dBucket["epoch"] > newestUsage):
+			newestUsage = dBucket["epoch"]
 		for item in dBucket["categories"]:
 			# Build bucket dic
 			dBucketsUsage[dBucket["bucket"]]['ok_ops'] = dBucketsUsage[dBucket["bucket"]]['ok_ops'] + item["successful_ops"]
@@ -59,8 +68,7 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OP(s) OK','OP(s) KO', 'GB upl', 'GB dl']]
-
+myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj nb','Obj quota','GB size','GB quota','OP(s) OK (*)','OP(s) KO (*)', 'GB upl (*)', 'GB dl (*)']]
 # Global usage
 kb_total = obj_total = kb_quota_total = obj_quota_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
 
@@ -72,7 +80,7 @@ for dBucket in dBuckets:
 	# Get std info
 	bucket = dBucket["bucket"]
 	owner = dBucket["owner"]
-	created = dBucket["mtime"]
+	created = datetime.strptime(dBucket["mtime"], '%Y-%m-%d %H:%M:%S.%f')
 	pool = dBucket["pool"]
 	# Get values usage
 	if('rgw.main' in dBucket["usage"].keys()):
@@ -115,7 +123,7 @@ for dBucket in dBuckets:
 	tmpdata.append(bucket) # Bucketname
 	tmpdata.append(owner) # Owner
 	tmpdata.append(pool) # Pool on Ceph
-	tmpdata.append(created) # Created date
+	tmpdata.append(str(created)) # Created date
 	tmpdata.append(str(nb_object)) # Number of objets
 	tmpdata.append(str(quota_object)) # Quota on objects
 	tmpdata.append(str(round(size_gb,1))) # GB size
@@ -148,3 +156,4 @@ myTable.justify_columns[4] = myTable.justify_columns[5] = myTable.justify_column
 myTable.justify_columns[8] = myTable.justify_columns[9] = myTable.justify_columns[10] = myTable.justify_columns[11] = 'right'
 # Output data
 print myTable.table
+print "* Stats from " + str(datetime.utcfromtimestamp(oldestUsage)) + " to " + str(datetime.utcfromtimestamp(newestUsage))
