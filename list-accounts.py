@@ -7,6 +7,7 @@
 # Author: Florent MONTHEL (fmonthel@flox-arts.net)
 #
 
+import ConfigParser
 import rgwadmin
 import argparse
 import time
@@ -15,10 +16,8 @@ from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
-access_key = 'costmpobj01'
-secret_key = 'xxxxx'
-rgw_server = 'objtmp01.flox-arts.net'
-ssl = False
+Config = ConfigParser.ConfigParser()
+Config.read('conf/config.ini')
 
 # Options
 parser = argparse.ArgumentParser(description='List usage of accounts on Ceph cluster')
@@ -32,7 +31,7 @@ else:
 	accountname = ""
 
 # Object connection
-radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl,verify=False)
+radosgw = rgwadmin.RGWAdmin(Config.get('RGW','rgw_access_key'),Config.get('RGW','rgw_secret_key'),Config.get('RGW','rgw_server'),secure=False,verify=False)
 
 # Get users
 dUsers = radosgw.get_users()

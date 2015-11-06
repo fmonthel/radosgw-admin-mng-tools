@@ -1,5 +1,6 @@
 #!/usr/bin/env python
- 
+
+import ConfigParser
 import argparse
 import re
 import json
@@ -8,11 +9,8 @@ import rgwadmin
 import logging
 
 # Parameters
-access_key = '****'
-secret_key ='****'
-rgw_server = 'srvusceph05.flox-arts.net'
-env = 'tmp'
-ssl = False
+Config = ConfigParser.ConfigParser()
+Config.read('conf/config.ini')
 
 # Options
 parser = argparse.ArgumentParser(description='Create object account on CEPH cluster for OpenStack Swift and Amazon S3')
@@ -51,7 +49,7 @@ trigram = args.trigram.lower()
 ownername = args.ownername.lower()
  
 # Object connection ADMIN
-radosgw = rgwadmin.RGWAdmin(access_key,secret_key,rgw_server,secure=ssl)
+radosgw = rgwadmin.RGWAdmin(Config.get('RGW','rgw_access_key'),Config.get('RGW','rgw_secret_key'),Config.get('RGW','rgw_server'),secure=False,verify=False)
  
 # Parse users and get accountname
 max = 1
@@ -64,7 +62,7 @@ for user in users:
     
 # Accountname generated
 max = str("%02d" % max)
-accountname = trigram+env+kind+""+max
+accountname = trigram + Config.get('ACCOUNT','account_env') + kind + "" + max
 if(kind == 'adm'):
     displayname = (trigram+" "+env+" adm object account "+ownername).upper()
 else:
