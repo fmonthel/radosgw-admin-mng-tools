@@ -56,10 +56,10 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Account name','Display name','Suspended','Bucket(s) nb','Max bucket(s)','Obj nb','GB size','OP(s) OK (*)','OP(s) KO (*)', 'GB upl (*)', 'GB dl (*)']]
+myAsciiTable = [['Account name','Display name','Suspended','S3 key(s)','Swift key(s)','Bucket(s)','Max bucket(s)','Obj','GB size','OPs OK(*)','OPs KO(*)', 'GB upl(*)', 'GB dl(*)']]
 
 # Global usage
-kb_total = obj_total = bucket_total = max_buckets_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
+kb_total = obj_total = bucket_total = max_buckets_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = s3keys_total = swkeys_total = 0
 
 # Loop on users
 for user in dUsers:
@@ -72,6 +72,8 @@ for user in dUsers:
 	account = user
 	displayname = dUser["display_name"]
 	max_buckets = dUser["max_buckets"]
+	nb_s3keys = len(dUser["keys"])
+	nb_swkeys = len(dUser["swift_keys"])
 	if(dUser["suspended"]):
 		suspended = "yes"
 	else:
@@ -111,12 +113,16 @@ for user in dUsers:
 	kb_total = kb_total + size_kb
 	obj_total = obj_total + nb_object
 	bucket_total = bucket_total + nb_bucket
+	s3keys_total = s3keys_total + nb_s3keys
+	swkeys_total = swkeys_total + nb_swkeys
 	# Print values and build list
 	tmpdata = list()
 	tmpdata.append(account) # Accountname
 	tmpdata.append(displayname) # Displayname
 	tmpdata.append(suspended) # Suspended
-	tmpdata.append(str(nb_bucket)) # Bucket(s) nb
+	tmpdata.append(str(nb_s3keys)) # S3 key(s)
+	tmpdata.append(str(nb_swkeys)) # Swift key(s)
+	tmpdata.append(str(nb_bucket)) # Bucket(s)
 	tmpdata.append(str(max_buckets)) # Max buckets
 	tmpdata.append(str(nb_object)) # Number of objets
 	tmpdata.append(str(round(size_gb,1))) # GB size
@@ -131,6 +137,8 @@ tmpdata = list()
 tmpdata.append("Total : " + str(len(myAsciiTable) - 1) + " account(s)")
 tmpdata.append("")
 tmpdata.append("")
+tmpdata.append(str(s3keys_total))
+tmpdata.append(str(swkeys_total))
 tmpdata.append(str(bucket_total))
 tmpdata.append(str(max_buckets_total))
 tmpdata.append(str(obj_total))
