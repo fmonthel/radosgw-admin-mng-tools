@@ -67,7 +67,7 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Bucket name','Owner','Pool','Created','Obj','Obj quota','GB size','GB quota','OPs OK(*)','OPs KO(*)', 'GB upl(*)', 'GB dl(*)']]
+myAsciiTable = [['Bucket name','Account','Pool','Created','Obj','Obj quota','GB size','GB quota','OPs OK(*)','OPs KO(*)', 'GB upl(*)', 'GB dl(*)']]
 # Global usage
 kb_total = obj_total = kb_quota_total = obj_quota_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = 0
 
@@ -120,7 +120,7 @@ for dBucket in dBuckets:
 	# Print values and build list
 	tmpdata = list()
 	tmpdata.append(bucket) # Bucketname
-	tmpdata.append(owner) # Owner
+	tmpdata.append(owner) # Account
 	tmpdata.append(pool) # Pool on Ceph
 	tmpdata.append(str(created)) # Created date
 	tmpdata.append(str(nb_object)) # Number of objets

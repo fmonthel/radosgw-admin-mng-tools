@@ -56,7 +56,7 @@ for dOwner in dUsage["entries"]:
 			dBucketsUsage[dBucket["bucket"]]['sent_kb'] = dBucketsUsage[dBucket["bucket"]]['sent_kb'] + float(item["bytes_sent"]/1024)
 
 # Ascii table
-myAsciiTable = [['Account name','Display name','Suspended','S3 key(s)','Swift key(s)','Bucket(s)','Max bucket(s)','Obj','GB size','OPs OK(*)','OPs KO(*)', 'GB upl(*)', 'GB dl(*)']]
+myAsciiTable = [['Account','Display name','Suspended','S3 key(s)','Swift key(s)','Bucket(s)','Max bucket(s)','Obj','GB size','OPs OK(*)','OPs KO(*)', 'GB upl(*)', 'GB dl(*)']]
 
 # Global usage
 kb_total = obj_total = bucket_total = max_buckets_total = ops_ko_total = ops_ok_total = kb_received_total = kb_sent_total = s3keys_total = swkeys_total = 0

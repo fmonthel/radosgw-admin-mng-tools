@@ -66,3 +66,35 @@ To list all buckets on Ceph cluster :
 	| Total : 5 bucket(s) |             |              |                     |    783 |         0 |     7.1 |      0.0 |         1496 |            1 |        7.1 |       1.9 |
 	+---------------------+-------------+--------------+---------------------+--------+-----------+---------+----------+--------------+--------------+------------+-----------+
 	* Stats from 2015-10-28 04:00:00 to 2015-11-04 20:00:00
+
+##### Information on keys :
+ 
+	./list-keys.py -h
+	usage: list-keys.py [-h] [--accountname ACCOUNTNAME] [--protocol PROTOCOL]
+    
+	List keys of accounts on Ceph cluster
+    
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  --accountname ACCOUNTNAME
+	                        Filter on accountname (example : flatstobj01)
+	  --protocol PROTOCOL   Filter on S3 or Swift keys (example : S3)
+
+To list all keys on Ceph cluster :
+ 
+	./list-keys.py
+	+-------------------------------+-------------+-----------+-------+-------------------------------+--------------+
+	| Access key                    | Account     | Suspended | Type  | Owner (subuser or user)       | Permissions  |
+	+-------------------------------+-------------+-----------+-------+-------------------------------+--------------+
+	| jmktmpobj01usr001             | jmktmpobj01 | no        | S3    | jmktmpobj01:jmktmpobj01usr001 | full-control |
+	| jmktmpobj01usr301             | jmktmpobj01 | no        | S3    | jmktmpobj01:jmktmpobj01usr301 | read         |
+	| jmktmpobj01:jmktmpobj01usr001 | jmktmpobj01 | no        | Swift | jmktmpobj01:jmktmpobj01usr001 | full-control |
+	| jmktmpobj01:jmktmpobj01usr301 | jmktmpobj01 | no        | Swift | jmktmpobj01:jmktmpobj01usr301 | read         |
+	| flatmpobj01usr001             | flatmpobj01 | no        | S3    | flatmpobj01:flatmpobj01usr001 | full-control |
+	| flatmpobj01usr301             | flatmpobj01 | no        | S3    | flatmpobj01:flatmpobj01usr301 | read         |
+	| flatmpobj01:flatmpobj01usr001 | flatmpobj01 | no        | Swift | flatmpobj01:flatmpobj01usr001 | full-control |
+	| flatmpobj01:flatmpobj01usr301 | flatmpobj01 | no        | Swift | flatmpobj01:flatmpobj01usr301 | read         |
+	| costmpobj01                   | costmpobj01 | no        | S3    | costmpobj01                   | full-control |
+	+-------------------------------+-------------+-----------+-------+-------------------------------+--------------+
+	| Total : 9 key(s)              |             |           |       |                               |              |
+	+-------------------------------+-------------+-----------+-------+-------------------------------+--------------+
