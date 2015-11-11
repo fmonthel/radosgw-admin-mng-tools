@@ -55,7 +55,7 @@ radosgw = rgwadmin.RGWAdmin(Config.get('RGW','rgw_access_key'),Config.get('RGW',
 max = 1
 users = radosgw.get_users()
 for user in users:
-    match = re.search(r"^"+trigram+env+kind+"([0-9]{2})$",user)
+    match = re.search(r"^" + trigram + Config.get('ACCOUNT','account_env') + kind + "([0-9]{2})$",user)
     if(match):
         if(int(match.group(1)) >= max) :
             max = int(match.group(1)) + 1
@@ -64,9 +64,9 @@ for user in users:
 max = str("%02d" % max)
 accountname = trigram + Config.get('ACCOUNT','account_env') + kind + "" + max
 if(kind == 'adm'):
-    displayname = (trigram+" "+env+" adm object account "+ownername).upper()
+    displayname = (trigram + " " + Config.get('ACCOUNT','account_env') + " adm object account " + ownername).upper()
 else:
-    displayname = (trigram+" "+env+" object account "+ownername).upper()
+    displayname = (trigram + " " + Config.get('ACCOUNT','account_env') + " object account " + ownername).upper()
  
 if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=secretkey,key_type='s3')):
     print "#### Object storage accountname created : "+accountname+" ####"
@@ -95,9 +95,9 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=secre
         print " - Readonly access key created for OpenStack Swift : "+accountname+":"+accountname+"usr001 - Associated secret key : "+secretkey
     # Now we're going to connect with account and create buckets (if keys asked)
     if(args.fullright) :
-        radosgw = rgwadmin.RGWAdmin(accountname+'usr001',secretkey,rgw_server,secure=ssl)
+        radosgw = rgwadmin.RGWAdmin(accountname+'usr001',secretkey,Config.get('RGW','rgw_server'),secure=False)
     elif (args.readonly) :
-        radosgw = rgwadmin.RGWAdmin(accountname+'usr301',secretkey,rgw_server,secure=ssl)
+        radosgw = rgwadmin.RGWAdmin(accountname+'usr301',secretkey,Config.get('RGW','rgw_server'),secure=False)
     if(args.fullright or args.readonly):
     	# Create 3 buckets
     	i = 1
