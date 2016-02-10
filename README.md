@@ -9,6 +9,9 @@ We're using radosgw-admin module (github)
 ##### Create account and keys :
 
     ./create-account.py -h
+	usage: create-account.py [-h] [--readonly-key] [--fullright-key]
+	                         [--secretkey SECRETKEY]
+	                         trigram email
 
 #####  Information on accounts :
 
