@@ -9,9 +9,39 @@ We're using radosgw-admin module (github)
 ##### Create account and keys :
 
     ./create-account.py -h
-	usage: create-account.py [-h] [--readonly-key] [--fullright-key]
-	                         [--secretkey SECRETKEY]
+	usage: create-account.py [-h] [--readonly-key] [--writeonly-key]
+	                         [--readwrite-key] [--fullright-key]
+	                         [--buckets-nb BUCKETSNB]
 	                         trigram email
+
+To create account on Ceph cluster with several keys and 5 buckets/containers :
+
+    ./create-account.py --readonly-key --writeonly-key --readwrite-key --fullright-key --buckets-nb=5 fla fmonthel@flox-arts.net
+    
+    #### ACCOUNT INFORMATION (JUST CREATED) ####
+    +-------------+-----------------------------------------------+-----------+-----------+--------------+--------------------+---------------+
+    | Account     | Display name                                  | Suspended | S3 key(s) | Swift key(s) | Bucket(s) created  | Max bucket(s) |
+    +-------------+-----------------------------------------------+-----------+-----------+--------------+--------------------+---------------+
+    | flatmpcos51 | FLA TMP OBJECT ACCOUNT FMONTHEL@FLOX-ARTS.NET | no        |         4 |            4 | flatmpcos51buck001 |          1000 |
+    |             |                                               |           |           |              | flatmpcos51buck002 |               |
+    |             |                                               |           |           |              | flatmpcos51buck003 |               |
+    |             |                                               |           |           |              | flatmpcos51buck004 |               |
+    |             |                                               |           |           |              | flatmpcos51buck005 |               |
+    +-------------+-----------------------------------------------+-----------+-----------+--------------+--------------------+---------------+
+    
+    #### S3/SWIFT API KEY(S) INFORMATION ####
+    +----------+--------------+-------------------------------+----------------------+
+    | Protocol | Permissions  | Access key                    | Secret key           |
+    +----------+--------------+-------------------------------+----------------------+
+    | S3       | Full-control | flatmpcos51usr001             | aaaaaaaaabbbbbbbbbcc |
+    | Swift    | Full-control | flatmpcos51:flatmpcos51usr001 | aaaaaaaaabbbbbbbbbcc |
+    | S3       | Read/Write   | flatmpcos51usr101             | aaaaaaaaabbbbbbbbbcc |
+    | Swift    | Read/Write   | flatmpcos51:flatmpcos51usr101 | aaaaaaaaabbbbbbbbbcc |
+    | S3       | Write-only   | flatmpcos51usr201             | aaaaaaaaabbbbbbbbbcc |
+    | Swift    | Write-only   | flatmpcos51:flatmpcos51usr201 | aaaaaaaaabbbbbbbbbcc |
+    | S3       | Read-only    | flatmpcos51usr301             | aaaaaaaaabbbbbbbbbcc |
+    | Swift    | Read-only    | flatmpcos51:flatmpcos51usr301 | aaaaaaaaabbbbbbbbbcc |
+    +----------+--------------+-------------------------------+----------------------+
 
 #####  Information on accounts :
 
