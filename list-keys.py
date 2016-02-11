@@ -62,7 +62,7 @@ for user in dUsers:
 	for subuser in dUser['subusers']:
 		dSubusers[ subuser['id'] ] = {'permissions':subuser['permissions']}
 	# Loop now on S3 keys
-	if(protocol == ''or protocol == "s3"):
+	if(protocol == '' or protocol == "s3"):
 		for keys in dUser['keys']:
 			# Get infos
 			access_key = keys['access_key']
@@ -81,7 +81,7 @@ for user in dUsers:
 			tmpdata.append(permissions) # Permissions
 			myAsciiTable.append(tmpdata)
 	# Loop now on Swift keys
-	if(protocol == ''or protocol == "swift"):
+	if(protocol == '' or protocol == "swift"):
 		for keys in dUser['swift_keys']:
 			# Get infos
 			access_key = keys['user']

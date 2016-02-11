@@ -12,9 +12,10 @@ import rgwadmin
 import argparse
 import random
 import re
+from lib.RadosGwKeys import RadosGwKeys
 from terminaltables import AsciiTable
 
-# Functions
+# Function to generate secretkey
 def generate_secret() :
     alphabet = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     pw_length = 20
@@ -80,27 +81,14 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
         subuser = accountname+'usr001'
         secretkey = generate_secret()
         
-        # Create subuser FULL (usr001)
-        radosgw.create_subuser(uid=accountname,subuser=subuser,access='full')
-        
-        # Generate key for S3 (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='s3',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("S3")
-        tmpdata.append("Full-control") # Permissions
-        tmpdata.append(subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Subuser
+        rados_gw_keys = RadosGwKeys(radosgw)
+        rados_gw_keys.createSubUser(accountname,subuser,'full')
+        # Create S3 key
+        tmpdata = rados_gw_keys.createKey('s3',secretkey)
         myAsciiTableKey.append(tmpdata)
-        
-        # Generate key for Swift (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='swift',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("Swift")
-        tmpdata.append("Full-control") # Permissions
-        tmpdata.append(accountname+":"+subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Swift key
+        tmpdata = rados_gw_keys.createKey('swift',secretkey)
         myAsciiTableKey.append(tmpdata)
         
     # Create subuser read/write if needed
@@ -110,27 +98,14 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
         subuser = accountname+'usr101'
         secretkey = generate_secret()
         
-        # Create subuser FULL (usr001)
-        radosgw.create_subuser(uid=accountname,subuser=subuser,access='readwrite')
-        
-        # Generate key for S3 (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='s3',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("S3")
-        tmpdata.append("Read/Write") # Permissions
-        tmpdata.append(subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Subuser
+        rados_gw_keys = RadosGwKeys(radosgw)
+        rados_gw_keys.createSubUser(accountname,subuser,'readwrite')
+        # Create S3 key
+        tmpdata = rados_gw_keys.createKey('s3',secretkey)
         myAsciiTableKey.append(tmpdata)
-        
-        # Generate key for Swift (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='swift',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("Swift")
-        tmpdata.append("Read/Write") # Permissions
-        tmpdata.append(accountname+":"+subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Swift key
+        tmpdata = rados_gw_keys.createKey('swift',secretkey)
         myAsciiTableKey.append(tmpdata)
 
     # Create subuser write-only if needed
@@ -140,27 +115,14 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
         subuser = accountname+'usr201'
         secretkey = generate_secret()
         
-        # Create subuser FULL (usr001)
-        radosgw.create_subuser(uid=accountname,subuser=subuser,access='write')
-        
-        # Generate key for S3 (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='s3',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("S3")
-        tmpdata.append("Write-only") # Permissions
-        tmpdata.append(subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Subuser
+        rados_gw_keys = RadosGwKeys(radosgw)
+        rados_gw_keys.createSubUser(accountname,subuser,'write')
+        # Create S3 key
+        tmpdata = rados_gw_keys.createKey('s3',secretkey)
         myAsciiTableKey.append(tmpdata)
-        
-        # Generate key for Swift (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='swift',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("Swift")
-        tmpdata.append("Write-only") # Permissions
-        tmpdata.append(accountname+":"+subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Swift key
+        tmpdata = rados_gw_keys.createKey('swift',secretkey)
         myAsciiTableKey.append(tmpdata)
     
     # Create subuser read-only if needed
@@ -170,27 +132,14 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
         subuser = accountname+'usr301'
         secretkey = generate_secret()
         
-        # Create subuser FULL (usr001)
-        radosgw.create_subuser(uid=accountname,subuser=subuser,access='read')
-        
-        # Generate key for S3 (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='s3',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("S3")
-        tmpdata.append("Read-only") # Permissions
-        tmpdata.append(subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Subuser
+        rados_gw_keys = RadosGwKeys(radosgw)
+        rados_gw_keys.createSubUser(accountname,subuser,'read')
+        # Create S3 key
+        tmpdata = rados_gw_keys.createKey('s3',secretkey)
         myAsciiTableKey.append(tmpdata)
-        
-        # Generate key for Swift (on subuser)
-        radosgw.create_key(uid=accountname,subuser=subuser,key_type='swift',access_key=subuser,secret_key=secretkey,generate_key=None);
-		# Print values and build list for Swift
-        tmpdata = list()
-        tmpdata.append("Swift")
-        tmpdata.append("Read-only") # Permissions
-        tmpdata.append(accountname+":"+subuser) # Accesskey
-        tmpdata.append(secretkey) # Secretkey
+        # Create Swift key
+        tmpdata = rados_gw_keys.createKey('swift',secretkey)
         myAsciiTableKey.append(tmpdata)
 
     # Now we're going to connect with account and create buckets (if keys asked)
