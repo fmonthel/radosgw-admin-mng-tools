@@ -1,5 +1,7 @@
 # Radosgw admin MNG Tools
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1152c37781184c2c9cdfbfc6cd0f1b07)](https://www.codacy.com/app/fmonthel/radosgw-admin-mng-tools?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=fmonthel/radosgw-admin-mng-tools&amp;utm_campaign=Badge_Grade)
+
 Scripts to manage accounts, buckets, reporting for Ceph object mode (Swift and S3)
 
     pip install terminaltables rgwadmin argparse

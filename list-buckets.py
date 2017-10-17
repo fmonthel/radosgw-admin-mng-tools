@@ -12,7 +12,6 @@ import rgwadmin
 import argparse
 import time
 from datetime import datetime
-from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
@@ -30,7 +29,7 @@ if(args.bucketname):
 	bucketname = args.bucketname.lower()
 else:
 	bucketname = ""
-	
+
 if(args.accountname):
 	accountname = args.accountname.lower()
 else:
@@ -74,7 +73,7 @@ kb_total = obj_total = kb_quota_total = obj_quota_total = ops_ko_total = ops_ok_
 # Loop on bucket
 for dBucket in dBuckets:
 	# Need to loop on good element in the list
-	if(type(dBucket) is not dict):
+	if not isinstance(dBucket, dict) :
 		continue;
 	# Get std info
 	bucket = dBucket["bucket"]

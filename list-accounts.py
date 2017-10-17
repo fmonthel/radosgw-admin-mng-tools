@@ -12,7 +12,6 @@ import rgwadmin
 import argparse
 import time
 from datetime import datetime
-from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
@@ -24,7 +23,7 @@ parser = argparse.ArgumentParser(description='List usage of accounts on Ceph clu
 parser.add_argument('--accountname', help='Filter on accountname (example : flatstobj01)', action='store', dest='accountname')
 
 args = parser.parse_args()
-	
+
 if(args.accountname):
 	accountname = args.accountname.lower()
 else:
@@ -101,7 +100,7 @@ for user in dUsers:
 	# Loop on bucket
 	for dBucket in dBuckets:
 		# Need to loop on good element in the list
-		if(type(dBucket) is not dict):
+		if not isinstance(dBucket, dict) :
 			continue;
 		# Get values usage
 		if('rgw.main' in dBucket["usage"].keys()):
@@ -147,7 +146,7 @@ tmpdata.append(str(ops_ok_total))
 tmpdata.append(str(ops_ko_total))
 tmpdata.append(str(round(float(kb_received_total)/1048576,1)))
 tmpdata.append(str(round(float(kb_sent_total)/1048576,1)))
-myAsciiTable.append(tmpdata)	
+myAsciiTable.append(tmpdata)
 # Create AsciiTable
 myTable = AsciiTable(myAsciiTable)
 myTable.inner_footing_row_border = True

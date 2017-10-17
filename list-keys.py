@@ -10,9 +10,6 @@
 import ConfigParser
 import rgwadmin
 import argparse
-import time
-from datetime import datetime
-from time import strftime
 from terminaltables import AsciiTable
 
 # Parameters
@@ -25,7 +22,7 @@ parser.add_argument('--accountname', help='Filter on accountname (example : flat
 parser.add_argument('--protocol', help='Filter on S3 or Swift keys (example : S3)', action='store', dest='protocol')
 
 args = parser.parse_args()
-	
+
 if(args.accountname):
 	accountname = args.accountname.lower()
 else:

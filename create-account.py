@@ -40,7 +40,7 @@ parser.add_argument('--buckets-nb', help='Number of bucket(s)/container(s) to cr
 
 
 args = parser.parse_args()
- 
+
 # Mandatory inputs
 trigram = args.trigram.lower()
 email = args.email.lower()
@@ -53,19 +53,19 @@ radosgw = rgwadmin.RGWAdmin(Config.get('RGW','rgw_access_key'),Config.get('RGW',
 dUsers = radosgw.get_users()
 
 # Loop on users to increment id
-max = 1
+max_current_user = 1
 for user in dUsers:
     match = re.search(r"^" + trigram + Config.get('ACCOUNT','account_env') + "cos" + "([0-9]{2})$",user)
     if(match):
-        if(int(match.group(1)) >= max) :
-            max = int(match.group(1)) + 1
+        if(int(match.group(1)) >= max_current_user) :
+            max_current_user = int(match.group(1)) + 1
     
 # Accountname generated
-max = str("%02d" % max)
-accountname = trigram + Config.get('ACCOUNT','account_env') + "cos" + max
+max_current_user = str("%02d" % max_current_user)
+accountname = trigram + Config.get('ACCOUNT','account_env') + "cos" + max_current_user
 displayname = (trigram + " " + Config.get('ACCOUNT','account_env') + " object account " + email).upper()
 
-# Create RadosGW account 
+# Create RadosGW account
 if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accountname,key_type='s3')):
 
     # Delete Temporary key
@@ -213,7 +213,7 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
 	# Get std info
 	account = accountname
 	displayname = dUser["display_name"]
-	max_buckets = dUser["max_buckets"]
+	max_current_user_buckets = dUser["max_current_user_buckets"]
 	nb_s3keys = len(dUser["keys"])
 	nb_swkeys = len(dUser["swift_keys"])
 	if(dUser["suspended"]):
@@ -222,7 +222,7 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
 		suspended = "no"
 
     # Ascii table
-    myAsciiTableAccount = [['Account','Display name','Suspended','S3 key(s)','Swift key(s)','Bucket(s) created','Max bucket(s)']]
+    myAsciiTableAccount = [['Account','Display name','Suspended','S3 key(s)','Swift key(s)','Bucket(s) created','max_current_user bucket(s)']]
 	# Print values and build list
     tmpdata = list()
     tmpdata.append(account) # Accountname
@@ -231,7 +231,7 @@ if(radosgw.create_user(uid=accountname,display_name=displayname,access_key=accou
     tmpdata.append(str(nb_s3keys)) # S3 key(s)
     tmpdata.append(str(nb_swkeys)) # Swift key(s)
     tmpdata.append(str(buckets_list)) # Bucket(s)
-    tmpdata.append(str(max_buckets)) # Max buckets
+    tmpdata.append(str(max_current_user_buckets)) # max_current_user buckets
     myAsciiTableAccount.append(tmpdata)
     
     # Create AsciiTable for account
